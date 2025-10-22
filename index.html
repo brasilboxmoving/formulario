@@ -1,367 +1,131 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Inventário de Mudança - Box Brasil Moving</title>
+
+    <!-- jsPDF + AutoTable (para gerar PDF no cliente) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #0056A7 0%, #003366 100%);
-            color: #333;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-        }
-        
-        header {
-            background: linear-gradient(to right, #0056A7, #FF6D00);
-            color: white;
-            padding: 25px;
-            text-align: center;
-        }
-        
-        h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-        
-        .content {
-            padding: 25px;
-        }
-        
-        .form-section {
-            margin-bottom: 30px;
-        }
-        
-        h2 {
-            color: #0056A7;
-            border-bottom: 2px solid #FF6D00;
-            padding-bottom: 8px;
-            margin-bottom: 20px;
-            font-size: 22px;
-        }
-        
-        .form-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .form-group {
-            flex: 1;
-            min-width: 200px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #0056A7;
-        }
-        
-        input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        input:focus {
-            border-color: #0056A7;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(0, 86, 167, 0.2);
-        }
-        
-        .btn {
-            background: #FF6D00;
-            color: white;
-            border: none;
-            padding: 14px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .btn:hover {
-            background: #E55C00;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 109, 0, 0.4);
-        }
-        
-        .btn-success {
-            background: #00A859;
-        }
-        
-        .btn-success:hover {
-            background: #008E4A;
-        }
-        
-        .btn i {
-            margin-right: 8px;
-        }
-        
-        .alert {
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            display: none;
-        }
-        
-        .alert-danger {
-            background-color: #ffe6e6;
-            border: 1px solid #ff9999;
-            color: #cc0000;
-        }
-        
-        .alert-success {
-            background-color: #e6ffe6;
-            border: 1px solid #99cc99;
-            color: #006600;
-        }
-        
-        .alert-info {
-            background-color: #e6f7ff;
-            border: 1px solid #99d6ff;
-            color: #0066cc;
-        }
-        
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .items-table th {
-            background-color: #0056A7;
-            color: white;
-            padding: 12px 15px;
-            text-align: left;
-        }
-        
-        .items-table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .items-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        
-        .items-table tr:hover {
-            background-color: #f0f7ff;
-        }
-        
-        .delete-btn {
-            background: #ff3333;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        
-        .delete-btn:hover {
-            background: #cc0000;
-        }
-        
-        .summary {
-            background-color: #f0f7ff;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 30px;
-        }
-        
-        .summary h3 {
-            color: #0056A7;
-            margin-bottom: 15px;
-        }
-        
-        .actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .prohibited-list {
-            background-color: #fff5f5;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 30px;
-        }
-        
-        .prohibited-list h3 {
-            color: #cc0000;
-            margin-bottom: 15px;
-        }
-        
-        .prohibited-list ul {
-            padding-left: 20px;
-        }
-        
-        .prohibited-list li {
-            margin-bottom: 8px;
-        }
-        
-        .highlight {
-            background-color: #fffacd;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                border-radius: 10px;
-            }
-            
-            h1 {
-                font-size: 24px;
-            }
-            
-            .content {
-                padding: 15px;
-            }
-            
-            .form-row {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .form-group {
-                min-width: 100%;
-            }
-            
-            .items-table {
-                font-size: 14px;
-            }
-            
-            .items-table th, .items-table td {
-                padding: 8px 10px;
-            }
-            
-            .actions {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-                margin-right: 0;
-            }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg,#0056A7 0%,#003366 100%); color:#333; min-height:100vh; padding:20px; }
+        .container { max-width:1000px; margin:0 auto; background-color:white; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.2); overflow:hidden; }
+        header { background: linear-gradient(to right,#0056A7,#FF6D00); color:white; padding:25px; text-align:center; }
+        h1 { font-size:28px; margin-bottom:10px; color:#FFD200; font-weight:700; } /* Box Brasil Moving em amarelo */
+        .subtitle { font-size:28px; opacity:0.95; margin-top:0; color:#FFFFFF; font-weight:600; } /* Check list grande */
+        .content { padding:25px; }
+        .form-section { margin-bottom:30px; }
+        label { display:block; margin-bottom:8px; font-weight:600; color:#0056A7; }
+        .form-row { display:flex; gap:15px; margin-bottom:20px; flex-wrap:wrap; }
+        .form-group { flex:1; min-width:200px; }
+        input { width:100%; padding:12px 15px; border:2px solid #ddd; border-radius:8px; font-size:16px; transition:all 0.3s; }
+        input:focus { border-color:#0056A7; outline:none; box-shadow:0 0 0 3px rgba(0,86,167,0.2); }
+        .btn { background:#FF6D00; color:white; border:none; padding:14px 25px; border-radius:8px; cursor:pointer; font-size:16px; font-weight:600; transition:all 0.3s; display:inline-flex; align-items:center; justify-content:center; margin-right:10px; margin-bottom:10px; }
+        .btn:hover { background:#E55C00; transform:translateY(-2px); box-shadow:0 5px 15px rgba(255,109,0,0.4); }
+        .btn-success { background:#00A859; }
+        .btn-success:hover { background:#008E4A; }
+        .items-table { width:100%; border-collapse:collapse; margin-top:20px; box-shadow:0 2px 10px rgba(0,0,0,0.1); }
+        .items-table th { background-color:#0056A7; color:white; padding:12px 15px; text-align:left; }
+        .items-table td { padding:12px 15px; border-bottom:1px solid #ddd; }
+        .summary { background-color:#f0f7ff; padding:20px; border-radius:8px; margin-top:30px; display:none; }
+        .alert { padding:15px; border-radius:8px; margin:20px 0; display:none; }
+        .alert-success { background-color:#e6ffe6; border:1px solid #99cc99; color:#006600; }
+        .alert-info { background-color:#e6f7ff; border:1px solid #99d6ff; color:#0066cc; }
+        .alert-danger { background-color:#ffe6e6; border:1px solid #ff9999; color:#cc0000; }
+        .delete-btn { background:#ff3333; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; font-size:14px; }
+        .delete-btn:hover { background:#cc0000; }
+        .prohibited-list { background-color:#fff5f5; padding:20px; border-radius:8px; margin-top:30px; }
+        .highlight { background-color:#fffacd; padding:2px 5px; border-radius:3px; }
+        @media (max-width:768px) {
+            h1 { font-size:22px; }
+            .subtitle { font-size:22px; }
+            .form-row { flex-direction:column; gap:10px; }
+            .btn { width:100%; margin-right:0; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>📦 Box Brasil Moving</h1>
-            <p class="subtitle">Formulário de Inventário para Mudança Internacional</p>
+            <h1>Box Brasil Moving</h1>
+            <p class="subtitle">Check list</p>
         </header>
-        
+
         <div class="content">
-            <div class="alert alert-danger" id="prohibitedAlert">
-                <strong>Atenção!</strong> Este item é proibido para envio em container de mudança.
+            <!-- Dados da Caixa -->
+            <div class="form-section">
+                <h2>Dados da Caixa</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="boxNumber">Número da Caixa</label>
+                        <input type="text" id="boxNumber" placeholder="Ex: 001A">
+                    </div>
+                    <div class="form-group">
+                        <label for="boxOwner">Nome (Responsável)</label>
+                        <input type="text" id="boxOwner" placeholder="Nome do responsável/proprietário">
+                    </div>
+                    <div class="form-group">
+                        <label for="origin">Origem</label>
+                        <input type="text" id="origin" placeholder="Cidade / País de origem">
+                    </div>
+                    <div class="form-group">
+                        <label for="destination">Destino</label>
+                        <input type="text" id="destination" placeholder="Cidade / País de destino">
+                    </div>
+                </div>
             </div>
-            
-            <div class="alert alert-success" id="successAlert">
-                <strong>Sucesso!</strong> Item adicionado ao inventário.
-            </div>
-            
-            <div class="alert alert-info" id="exportAlert">
-                <strong>Concluído!</strong> Seu inventário foi enviado para extremeconsultant@icloud.com e está pronto para download.
-            </div>
-            
+
+            <div class="alert alert-danger" id="prohibitedAlert"><strong>Atenção!</strong> Este item é proibido para envio em container de mudança.</div>
+            <div class="alert alert-success" id="successAlert"><strong>Sucesso!</strong> Item adicionado ao inventário.</div>
+            <div class="alert alert-info" id="exportAlert"><strong>Concluído!</strong> Seu inventário foi gerado e (dependendo da opção) enviado.</div>
+
+            <!-- Adicionar Item -->
             <div class="form-section">
                 <h2>Adicionar Item à Caixa</h2>
-                
                 <div class="form-row">
                     <div class="form-group">
                         <label for="itemName">Nome do Item</label>
                         <input type="text" id="itemName" placeholder="Ex: TV 55', Sofá, Livros...">
                     </div>
-                    
                     <div class="form-group">
                         <label for="itemQuantity">Quantidade</label>
                         <input type="number" id="itemQuantity" min="1" value="1">
                     </div>
-                    
                     <div class="form-group">
                         <label for="itemValue">Valor Total Aproximado (US$)</label>
                         <input type="number" id="itemValue" min="0" step="0.01" placeholder="0.00">
                     </div>
                 </div>
-                
-                <!-- Corrigido: type="button" para evitar comportamento de submit e permitir controle via JS -->
-                <button class="btn" id="addItemBtn" type="button">
-                    <i>➕</i> Adicionar Item
-                </button>
+                <button class="btn" id="addItemBtn" type="button"><i>➕</i> Adicionar Item</button>
             </div>
-            
+
+            <!-- Itens adicionados -->
             <div class="form-section">
                 <h2>Itens Adicionados</h2>
                 <table class="items-table" id="itemsTable">
                     <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>Quantidade</th>
-                            <th>Valor Total (US$)</th>
-                            <th>Ações</th>
-                        </tr>
+                        <tr><th>Item</th><th>Quantidade</th><th>Valor Total (US$)</th><th>Ações</th></tr>
                     </thead>
-                    <tbody id="itemsList">
-                        <!-- Itens serão adicionados aqui dinamicamente -->
-                    </tbody>
+                    <tbody id="itemsList"></tbody>
                 </table>
-                
-                <div class="summary" id="summarySection" style="display: none;">
+
+                <div class="summary" id="summarySection">
                     <h3>Resumo do Inventário</h3>
                     <p><strong>Total de Itens Diferentes:</strong> <span id="totalItems">0</span></p>
                     <p><strong>Quantidade Total de Itens:</strong> <span id="totalQuantity">0</span></p>
                     <p><strong>Valor Total Aproximado:</strong> US$ <span id="totalValue">0.00</span></p>
-                    
+
                     <div class="actions">
-                        <!-- Corrigido: type="button" -->
-                        <button class="btn btn-success" id="exportBtn" type="button">
-                            <i>📧</i> Concluir e Enviar
-                        </button>
-                        <button class="btn" id="downloadBtn" type="button">
-                            <i>📥</i> Baixar Inventário
-                        </button>
+                        <!-- Agora: gera PDF e abre e-mail (não é possível anexar automaticamente sem backend) -->
+                        <button class="btn btn-success" id="exportBtn" type="button"><i>📧</i> Concluir e Enviar (PDF)</button>
+                        <button class="btn" id="downloadBtn" type="button"><i>📥</i> Baixar Inventário (PDF)</button>
                     </div>
                 </div>
             </div>
-            
+
             <div class="prohibited-list">
                 <h3>⚠️ Itens Proibidos para Envio</h3>
                 <p>Por questões de segurança e legislação aduaneira, os seguintes itens <span class="highlight">não podem</span> ser enviados em container de mudança:</p>
@@ -372,241 +136,267 @@
                     <li>Plantas, sementes e produtos agrícolas</li>
                     <li>Alimentos perecíveis</li>
                     <li>Animais vivos</li>
+                    <li>Documentos</li>
+                    <li>Fotos</li>
                     <li>Produtos piratas ou falsificados</li>
                     <li>Dinheiro em espécie e joias de alto valor</li>
                     <li>Medicamentos controlados sem receita</li>
                     <li>Baterias de lítio soltas</li>
                 </ul>
-                <p><strong>Dica:</strong> Consulte nossa equipe em caso de dúvidas sobre itens específicos.</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Lista de itens proibidos (em minúsculas para comparação)
-        const prohibitedItems = [
-            'gasolina', 'álcool', 'alcool', 'tinta', 'solvente', 'produto químico', 'produto toxico', 'produto tóxico',
-            'planta', 'semente', 'animal vivo', 'arma', 'munição', 'municao', 'bateria de lítio', 'bateria li',
-            'dinheiro', 'joia', 'medicamento controlado', 'produto pirata', 'alimento perecível', 'inflamável', 'inflamavel',
-            'explosivo', 'corrosivo', 'radioativo'
-        ];
-        
-        // Array para armazenar os itens
-        let items = [];
-        
-        // Elementos DOM
-        const itemNameInput = document.getElementById('itemName');
-        const itemQuantityInput = document.getElementById('itemQuantity');
-        const itemValueInput = document.getElementById('itemValue');
-        const addItemBtn = document.getElementById('addItemBtn');
-        const exportBtn = document.getElementById('exportBtn');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const itemsList = document.getElementById('itemsList');
-        const prohibitedAlert = document.getElementById('prohibitedAlert');
-        const successAlert = document.getElementById('successAlert');
-        const exportAlert = document.getElementById('exportAlert');
-        const totalItemsSpan = document.getElementById('totalItems');
-        const totalQuantitySpan = document.getElementById('totalQuantity');
-        const totalValueSpan = document.getElementById('totalValue');
-        const summarySection = document.getElementById('summarySection');
-        
-        // Função para verificar se um item é proibido
-        function isItemProhibited(itemName) {
-            const lowerCaseName = itemName.toLowerCase();
-            return prohibitedItems.some(prohibited => lowerCaseName.includes(prohibited));
-        }
-        
-        // Função para adicionar item à lista
-        function addItem() {
-            const name = itemNameInput.value.trim();
-            const quantity = parseInt(itemQuantityInput.value, 10);
-            const value = parseFloat(itemValueInput.value) || 0;
-            
-            // Validações básicas
-            if (!name) {
-                alert('Por favor, insira o nome do item.');
-                itemNameInput.focus();
-                return;
-            }
-            
-            if (isNaN(quantity) || quantity < 1) {
-                alert('A quantidade deve ser pelo menos 1.');
-                itemQuantityInput.focus();
-                return;
-            }
-            
-            // Verificar se o item é proibido
-            if (isItemProhibited(name)) {
-                prohibitedAlert.style.display = 'block';
-                successAlert.style.display = 'none';
-                exportAlert.style.display = 'none';
-                return;
-            }
-            
-            // Adicionar item ao array
-            const newItem = {
-                id: Date.now() + Math.floor(Math.random() * 1000), // ID único
-                name,
-                quantity,
-                value // Já é o valor total, não precisa calcular
-            };
-            
-            items.push(newItem);
-            
-            // Atualizar a tabela
-            updateItemsTable();
-            
-            // Mostrar alerta de sucesso
-            successAlert.style.display = 'block';
-            prohibitedAlert.style.display = 'none';
-            exportAlert.style.display = 'none';
-            
-            // Limpar formulário
-            itemNameInput.value = '';
-            itemQuantityInput.value = '1';
-            itemValueInput.value = '';
-            itemNameInput.focus();
-        }
-        
-        // Função para remover item
-        function removeItem(id) {
-            items = items.filter(item => item.id !== id);
-            updateItemsTable();
-        }
-        
-        // Função para atualizar a tabela de itens
-        function updateItemsTable() {
-            // Limpar a tabela
-            itemsList.innerHTML = '';
-            
-            // Adicionar cada item à tabela
-            items.forEach(item => {
-                const row = document.createElement('tr');
-                
-                const tdName = document.createElement('td');
-                tdName.textContent = item.name;
-                
-                const tdQty = document.createElement('td');
-                tdQty.textContent = item.quantity;
-                
-                const tdVal = document.createElement('td');
-                tdVal.textContent = `US$ ${item.value.toFixed(2)}`;
-                
-                const tdAct = document.createElement('td');
-                const delBtn = document.createElement('button');
-                delBtn.type = 'button'; // importante para não submeter forms acidentalmente
-                delBtn.className = 'delete-btn';
-                delBtn.textContent = 'Remover';
-                delBtn.addEventListener('click', () => removeItem(item.id));
-                
-                tdAct.appendChild(delBtn);
-                
-                row.appendChild(tdName);
-                row.appendChild(tdQty);
-                row.appendChild(tdVal);
-                row.appendChild(tdAct);
-                
-                itemsList.appendChild(row);
-            });
-            
-            // Atualizar resumo
-            updateSummary();
-        }
-        
-        // Função para atualizar o resumo
-        function updateSummary() {
-            const totalItems = items.length;
-            const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
-            const totalValue = items.reduce((sum, item) => sum + item.value, 0);
-            
-            totalItemsSpan.textContent = totalItems;
-            totalQuantitySpan.textContent = totalQuantity;
-            totalValueSpan.textContent = totalValue.toFixed(2);
-            
-            // Mostrar/ocultar seção de resumo
-            summarySection.style.display = items.length > 0 ? 'block' : 'none';
-        }
-        
-        // Função para exportar dados (gera CSV e faz download)
-        function exportData() {
-            if (items.length === 0) {
-                alert('Adicione pelo menos um item antes de exportar.');
-                return;
-            }
-            
-            // Criar conteúdo do CSV
-            let csvContent = "Item,Quantidade,Valor Total (US$)\n";
-            items.forEach(item => {
-                // escapar vírgulas no nome se necessário
-                const nameSafe = `"${String(item.name).replace(/"/g, '""')}"`;
-                csvContent += `${nameSafe},${item.quantity},${item.value.toFixed(2)}\n`;
-            });
-            
-            // Adicionar resumo
-            const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
-            const totalValue = items.reduce((sum, item) => sum + item.value, 0);
-            
-            csvContent += '\nRESUMO\n';
-            csvContent += `Itens Diferentes,${items.length}\n`;
-            csvContent += `Quantidade Total,${totalQuantity}\n`;
-            csvContent += `Valor Total,${totalValue.toFixed(2)}\n`;
-            csvContent += `Data,${new Date().toLocaleDateString('pt-BR')}\n`;
-            csvContent += `Cliente,Box Brasil Moving\n`;
-            
-            // Criar blob e link para download
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const filename = `inventario_mudanca_${new Date().toISOString().split('T')[0]}.csv`;
-            const link = document.createElement('a');
-            link.setAttribute('href', url);
-            link.setAttribute('download', filename);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            
-            // Simular envio por email (apenas log - envio real precisa de backend)
-            const email = 'extremeconsultant@icloud.com';
-            const subject = 'Inventário de Mudança - Box Brasil Moving';
-            const body = `Segue em anexo o inventário completo da mudança.\n\nTotal de itens: ${items.length}\nQuantidade total: ${totalQuantity}\nValor total: US$ ${totalValue.toFixed(2)}`;
-            
-            // Mostrar alerta de sucesso
-            exportAlert.style.display = 'block';
+    // --- Dados e elementos DOM ---
+    const prohibitedItems = ['gasolina','álcool','alcool','tinta','solvente','produto químico','produto toxico','produto tóxico','planta','semente','animal vivo','arma','munição','municao','bateria de lítio','bateria li','dinheiro','joia','medicamento controlado','produto pirata','alimento perecível','inflamável','inflamavel','explosivo','corrosivo','radioativo'];
+
+    let items = [];
+
+    const boxNumberInput = document.getElementById('boxNumber');
+    const boxOwnerInput = document.getElementById('boxOwner');
+    const originInput = document.getElementById('origin');
+    const destinationInput = document.getElementById('destination');
+
+    const itemNameInput = document.getElementById('itemName');
+    const itemQuantityInput = document.getElementById('itemQuantity');
+    const itemValueInput = document.getElementById('itemValue');
+    const addItemBtn = document.getElementById('addItemBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const itemsList = document.getElementById('itemsList');
+    const prohibitedAlert = document.getElementById('prohibitedAlert');
+    const successAlert = document.getElementById('successAlert');
+    const exportAlert = document.getElementById('exportAlert');
+    const totalItemsSpan = document.getElementById('totalItems');
+    const totalQuantitySpan = document.getElementById('totalQuantity');
+    const totalValueSpan = document.getElementById('totalValue');
+    const summarySection = document.getElementById('summarySection');
+
+    // --- Funções de UI / CRUD ---
+    function isItemProhibited(itemName) {
+        const lower = itemName.toLowerCase();
+        return prohibitedItems.some(p => lower.includes(p));
+    }
+
+    function addItem() {
+        const name = itemNameInput.value.trim();
+        const quantity = parseInt(itemQuantityInput.value, 10);
+        const value = parseFloat(itemValueInput.value) || 0;
+
+        if (!name) { alert('Por favor, insira o nome do item.'); itemNameInput.focus(); return; }
+        if (isNaN(quantity) || quantity < 1) { alert('A quantidade deve ser pelo menos 1.'); itemQuantityInput.focus(); return; }
+        if (isItemProhibited(name)) {
+            prohibitedAlert.style.display = 'block';
             successAlert.style.display = 'none';
-            prohibitedAlert.style.display = 'none';
-            
-            console.log(`Email simulado enviado para: ${email}`);
-            console.log(`Assunto: ${subject}`);
-            console.log(`Corpo: ${body}`);
-            
-            // Se quiser abrir o cliente de email (não anexa o CSV, apenas preenche assunto/corpo):
-            // window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            exportAlert.style.display = 'none';
+            return;
         }
-        
-        // Função para baixar inventário (reutiliza exportData)
-        function downloadInventory() {
-            exportData();
-        }
-        
-        // Event Listeners
-        addItemBtn.addEventListener('click', addItem);
-        exportBtn.addEventListener('click', exportData);
-        downloadBtn.addEventListener('click', downloadInventory);
-        
-        // Permitir adicionar item pressionando Enter no campo de nome, quantidade ou valor
-        function handleEnterAdd(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addItem();
-            }
-        }
-        itemNameInput.addEventListener('keydown', handleEnterAdd);
-        itemQuantityInput.addEventListener('keydown', handleEnterAdd);
-        itemValueInput.addEventListener('keydown', handleEnterAdd);
-        
-        // Inicializar a tabela
+
+        const newItem = { id: Date.now() + Math.floor(Math.random()*1000), name, quantity, value };
+        items.push(newItem);
         updateItemsTable();
+
+        successAlert.style.display = 'block';
+        prohibitedAlert.style.display = 'none';
+        exportAlert.style.display = 'none';
+
+        itemNameInput.value = '';
+        itemQuantityInput.value = '1';
+        itemValueInput.value = '';
+        itemNameInput.focus();
+    }
+
+    function removeItem(id) {
+        items = items.filter(i => i.id !== id);
+        updateItemsTable();
+    }
+
+    function updateItemsTable() {
+        itemsList.innerHTML = '';
+        items.forEach(item => {
+            const row = document.createElement('tr');
+            const tdName = document.createElement('td'); tdName.textContent = item.name;
+            const tdQty  = document.createElement('td'); tdQty.textContent = item.quantity;
+            const tdVal  = document.createElement('td'); tdVal.textContent = `US$ ${item.value.toFixed(2)}`;
+            const tdAct  = document.createElement('td');
+            const delBtn = document.createElement('button');
+            delBtn.type = 'button'; delBtn.className = 'delete-btn'; delBtn.textContent = 'Remover';
+            delBtn.addEventListener('click', () => removeItem(item.id));
+            tdAct.appendChild(delBtn);
+            row.appendChild(tdName); row.appendChild(tdQty); row.appendChild(tdVal); row.appendChild(tdAct);
+            itemsList.appendChild(row);
+        });
+        updateSummary();
+    }
+
+    function updateSummary() {
+        const totalItems = items.length;
+        const totalQuantity = items.reduce((s,i) => s + i.quantity, 0);
+        const totalValue = items.reduce((s,i) => s + i.value, 0);
+        totalItemsSpan.textContent = totalItems;
+        totalQuantitySpan.textContent = totalQuantity;
+        totalValueSpan.textContent = totalValue.toFixed(2);
+        summarySection.style.display = items.length > 0 ? 'block' : 'none';
+    }
+
+    // --- Geração de PDF no cliente usando jsPDF + autoTable ---
+    function generatePdfDoc() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+        // Cabeçalho
+        doc.setFontSize(16);
+        doc.setTextColor(0, 0, 0);
+        doc.text('Inventário de Mudança - Box Brasil Moving', 40, 48);
+
+        // Metadados da caixa
+        const boxNumber = boxNumberInput.value.trim() || '-';
+        const boxOwner = boxOwnerInput.value.trim() || '-';
+        const origin = originInput.value.trim() || '-';
+        const destination = destinationInput.value.trim() || '-';
+
+        doc.setFontSize(11);
+        const metaStartY = 70;
+        doc.text(`Número da Caixa: ${boxNumber}`, 40, metaStartY);
+        doc.text(`Nome: ${boxOwner}`, 300, metaStartY);
+        doc.text(`Origem: ${origin}`, 40, metaStartY + 16);
+        doc.text(`Destino: ${destination}`, 300, metaStartY + 16);
+
+        // Tabela de itens (autotable)
+        const tableBody = items.map(it => [it.name, String(it.quantity), it.value.toFixed(2)]);
+        doc.autoTable({
+            startY: metaStartY + 36,
+            head: [['Item','Quantidade','Valor Total (US$)']],
+            body: tableBody,
+            headStyles: { fillColor: [0,86,167], textColor: 255 },
+            styles: { fontSize: 10 },
+            margin: { left: 40, right: 40 }
+        });
+
+        // Resumo abaixo da tabela
+        const totalQuantity = items.reduce((s,i) => s + i.quantity, 0);
+        const totalValue = items.reduce((s,i) => s + i.value, 0);
+        const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 18 : metaStartY + 36 + (tableBody.length * 14);
+
+        doc.setFontSize(11);
+        doc.text(`Itens Diferentes: ${items.length}`, 40, finalY);
+        doc.text(`Quantidade Total: ${totalQuantity}`, 40, finalY + 14);
+        doc.text(`Valor Total Aproximado: US$ ${totalValue.toFixed(2)}`, 40, finalY + 28);
+
+        // Rodapé com data
+        doc.setFontSize(9);
+        doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 40, 800);
+
+        return doc;
+    }
+
+    // --- Ação: gerar PDF, baixar e abrir cliente de email (mailto) ---
+    // Observação importante: por limitações do navegador/protocolo mailto, NÃO é possível
+    // anexar automaticamente um arquivo (PDF) ao abrir o cliente de e-mail sem um backend.
+    // A opção abaixo gera o PDF localmente, inicia o download e em seguida abre o cliente de e-mail
+    // com assunto e corpo preenchidos — o usuário precisa anexar o PDF manualmente se quiser enviar.
+    function generatePdfAndOpenMail(alsoDownload = true) {
+        if (items.length === 0) { alert('Adicione pelo menos um item antes de exportar.'); return; }
+
+        // Gerar PDF
+        const doc = generatePdfDoc();
+        const pdfBlob = doc.output('blob');
+
+        // Forçar download do PDF (nome com número da caixa, se informado)
+        const boxNumber = boxNumberInput.value.trim();
+        const sanitizedBox = boxNumber ? boxNumber.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\-]/g, '') + '_' : '';
+        const filename = `inventario_mudanca_${sanitizedBox}${new Date().toISOString().split('T')[0]}.pdf`;
+
+        if (alsoDownload) {
+            const url = URL.createObjectURL(pdfBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Preparar mailto (não anexa arquivo)
+        const email = 'extremeconsultant@icloud.com';
+        const subject = `Inventário de Mudança: Caixa ${boxNumber || '-'}`;
+        const totalQuantity = items.reduce((s,i) => s + i.quantity, 0);
+        const totalValue = items.reduce((s,i) => s + i.value, 0);
+        const bodyLines = [
+            `Segue o inventário da caixa ${boxNumber || '-'}.`,
+            ``,
+            `Responsável: ${boxOwnerInput.value.trim() || '-'}`,
+            `Origem: ${originInput.value.trim() || '-'}`,
+            `Destino: ${destinationInput.value.trim() || '-'}`,
+            ``,
+            `Itens diferentes: ${items.length}`,
+            `Quantidade total: ${totalQuantity}`,
+            `Valor total: US$ ${totalValue.toFixed(2)}`,
+            ``,
+            `OBS: O PDF foi baixado automaticamente. Anexe-o manualmente a este e-mail antes de enviar.`
+        ];
+        const body = bodyLines.join('\n');
+
+        // Abrir cliente de e-mail
+        window.location.href = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+        // Mostrar alerta informativa
+        exportAlert.style.display = 'block';
+        successAlert.style.display = 'none';
+        prohibitedAlert.style.display = 'none';
+    }
+
+    // --- Alternativa avançada: enviar o PDF via backend (exemplo comentado) ---
+    // Se você tiver um backend, pode enviar o blob por fetch para um endpoint que faz o envio por e-mail.
+    // Exemplo (descomentar e ajustar URL do endpoint no servidor):
+    async function sendPdfToServerAndEmail() {
+        if (items.length === 0) { alert('Adicione pelo menos um item antes de exportar.'); return; }
+        const doc = generatePdfDoc();
+        const pdfBlob = doc.output('blob');
+        const fd = new FormData();
+        const boxNumber = boxNumberInput.value.trim();
+        const sanitizedBox = boxNumber ? boxNumber.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\-]/g, '') + '_' : '';
+        const filename = `inventario_mudanca_${sanitizedBox}${new Date().toISOString().split('T')[0]}.pdf`;
+        fd.append('file', pdfBlob, filename);
+        fd.append('boxNumber', boxNumberInput.value.trim());
+        fd.append('boxOwner', boxOwnerInput.value.trim());
+        fd.append('origin', originInput.value.trim());
+        fd.append('destination', destinationInput.value.trim());
+        // Enviar para seu endpoint que usa nodemailer / SendGrid / outro para mandar o e-mail com anexo
+        try {
+            const res = await fetch('/send-inventory', { method: 'POST', body: fd });
+            if (!res.ok) throw new Error('Falha no envio');
+            alert('Arquivo enviado ao servidor para envio por e-mail.');
+            exportAlert.style.display = 'block';
+        } catch (err) {
+            alert('Erro ao enviar ao servidor: ' + err.message);
+        }
+    }
+
+    // --- Handlers / Listeners ---
+    addItemBtn.addEventListener('click', addItem);
+    // exportBtn: gera PDF, força download e abre cliente de e-mail (mailto). 
+    // Se quiser envio automático por servidor, substitua pelo call a sendPdfToServerAndEmail()
+    exportBtn.addEventListener('click', () => generatePdfAndOpenMail(true));
+    downloadBtn.addEventListener('click', () => {
+        // Apenas baixar PDF sem abrir o cliente de e-mail
+        if (items.length === 0) { alert('Adicione pelo menos um item antes de baixar.'); return; }
+        const doc = generatePdfDoc();
+        const boxNumber = boxNumberInput.value.trim();
+        const sanitizedBox = boxNumber ? boxNumber.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\-]/g, '') + '_' : '';
+        const filename = `inventario_mudanca_${sanitizedBox}${new Date().toISOString().split('T')[0]}.pdf`;
+        doc.save(filename);
+    });
+
+    // Permitir Enter para adicionar
+    function handleEnterAdd(e) { if (e.key === 'Enter') { e.preventDefault(); addItem(); } }
+    itemNameInput.addEventListener('keydown', handleEnterAdd);
+    itemQuantityInput.addEventListener('keydown', handleEnterAdd);
+    itemValueInput.addEventListener('keydown', handleEnterAdd);
+
+    // Inicializar
+    updateItemsTable();
     </script>
 </body>
 </html>
